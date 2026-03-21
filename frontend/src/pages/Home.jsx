@@ -19,7 +19,7 @@ const Home = () => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const { data } = await axios.get('http://localhost:5000/api/users/votes', {
+        const { data } = await axios.get((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/users/votes', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setUserVotes(data);
@@ -29,7 +29,7 @@ const Home = () => {
 
   const fetchIssues = async () => {
     try {
-      const { data } = await axios.get('http://localhost:5000/api/issues');
+      const { data } = await axios.get((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/issues');
       setIssues(data);
     } catch (err) {
       setError('Failed to fetch issues');

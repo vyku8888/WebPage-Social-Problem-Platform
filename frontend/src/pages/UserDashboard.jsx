@@ -16,7 +16,7 @@ const UserDashboard = () => {
   const fetchDashboard = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get('http://localhost:5000/api/users/dashboard', {
+        const res = await axios.get((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/users/dashboard', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setData(res.data);
@@ -35,7 +35,7 @@ const UserDashboard = () => {
       const token = localStorage.getItem('token');
       const endpoint = type === 'issue' ? `/api/issues/${id}/status` : `/api/reports/${id}/status`;
       const statusValue = type === 'issue' ? 'Resolved' : 'Action Taken';
-      await axios.put(`http://localhost:5000${endpoint}`, { status: statusValue }, {
+      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${endpoint}`, { status: statusValue }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert(`${type === 'issue' ? 'Issue' : 'Report'} marked as resolved!`);
@@ -51,7 +51,7 @@ const UserDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const endpoint = deleteData.type === 'issue' ? `/api/issues/${deleteData.id}` : `/api/reports/${deleteData.id}`;
-      await axios.delete(`http://localhost:5000${endpoint}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${endpoint}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert(`${deleteData.type === 'issue' ? 'Issue' : 'Report'} deleted successfully.`);

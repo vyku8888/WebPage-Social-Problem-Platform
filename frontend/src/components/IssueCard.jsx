@@ -18,7 +18,7 @@ const IssueCard = ({ issue, hasVoted, onVoteSuccess }) => {
       const config = {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       };
-      const { data } = await axios.post(`http://localhost:5000/api/issues/${issue._id}/vote`, {}, config);
+      const { data } = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${issue._id}/vote`, {}, config);
       onVoteSuccess(issue._id, data.totalVotes, data.action);
     } catch (err) {
       setError(err.response?.data?.message || 'Error voting');

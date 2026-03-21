@@ -35,11 +35,11 @@ const IssueDetails = () => {
   const fetchIssueData = async () => {
     try {
       const [issueRes, commentsRes, solutionsRes, votesRes] = await Promise.all([
-        axios.get(`http://localhost:5000/api/issues/${id}`),
-        axios.get(`http://localhost:5000/api/comments/${id}`),
-        axios.get(`http://localhost:5000/api/solutions/${id}`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/comments/${id}`),
+        axios.get(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/solutions/${id}`),
         localStorage.getItem('token') 
-          ? axios.get('http://localhost:5000/api/users/votes', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }) 
+          ? axios.get((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/users/votes', { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }) 
           : Promise.resolve({ data: [] })
       ]);
       setIssue(issueRes.data);
@@ -59,7 +59,7 @@ const IssueDetails = () => {
     setCommenting(true);
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
-      await axios.post('http://localhost:5000/api/comments', { text: newComment, issueId: id }, config);
+      await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/comments', { text: newComment, issueId: id }, config);
       setNewComment('');
       fetchIssueData(); // refresh
     } catch (error) {
@@ -75,7 +75,7 @@ const IssueDetails = () => {
     setSubmittingSolution(true);
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
-      await axios.post('http://localhost:5000/api/solutions', { description: newSolution, issueId: id }, config);
+      await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/solutions', { description: newSolution, issueId: id }, config);
       setNewSolution('');
       fetchIssueData();
     } catch (error) {
@@ -88,7 +88,7 @@ const IssueDetails = () => {
   const handleVoteSolution = async (solutionId) => {
     try {
       const config = { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } };
-      await axios.post(`http://localhost:5000/api/solutions/${solutionId}/vote`, {}, config);
+      await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/solutions/${solutionId}/vote`, {}, config);
       fetchIssueData();
     } catch (error) {
       alert(error.response?.data?.message || 'Error voting for solution');
@@ -98,7 +98,7 @@ const IssueDetails = () => {
   const handleVote = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:5000/api/issues/${id}/vote`, {}, {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}/vote`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIssue({ ...issue, totalVotes: res.data.totalVotes });
@@ -117,7 +117,7 @@ const IssueDetails = () => {
     if (isDeleting) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.put(`http://localhost:5000/api/issues/${id}/status`, { status: newStatus }, {
+      const res = await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}/status`, { status: newStatus }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setIssue(res.data);
@@ -132,7 +132,7 @@ const IssueDetails = () => {
     setIsDeleting(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/issues/${id}`, {
+      await axios.delete(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/issues/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Issue and related data deleted successfully!');

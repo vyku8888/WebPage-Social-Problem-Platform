@@ -23,7 +23,7 @@ const AddIssue = () => {
       const config = {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
       };
-      await axios.post('http://localhost:5000/api/issues', {
+      await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/issues', {
         title, description, category
       }, config);
       navigate('/');
