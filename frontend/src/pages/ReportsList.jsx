@@ -41,7 +41,7 @@ const ReportsList = () => {
               <div className="h-48 w-full bg-gray-100 relative">
                 {/* Image is served statically from the Express backend port 5000 */}
                 <img 
-                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${report.imageUrl}`} 
+                  src={report.imageUrl.startsWith('http') ? report.imageUrl : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${report.imageUrl}`} 
                   alt={report.title}
                   className="w-full h-full object-cover"
                   onError={(e) => { e.target.src = 'https://placehold.co/600x400?text=No+Image+Found'; }}

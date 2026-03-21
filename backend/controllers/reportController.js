@@ -23,7 +23,7 @@ const createReport = async (req, res) => {
   let imageUrl = '';
 
   if (req.file) {
-    imageUrl = `/uploads/${req.file.filename}`;
+    imageUrl = req.file.path;
   } else {
     return res.status(400).json({ message: 'Image is required for reporting' });
   }
