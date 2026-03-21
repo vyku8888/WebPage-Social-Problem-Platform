@@ -16,7 +16,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="flex items-center">
-            <img src="/sociofy-logo.png" alt="Sociofy" className="h-8 object-contain" />
+            <img src="/sociofy-logo.jpg" alt="Sociofy" className="h-8 object-contain" />
           </Link>
           
           <div className="flex space-x-6 items-center">
