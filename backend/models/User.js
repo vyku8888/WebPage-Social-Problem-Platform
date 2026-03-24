@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema({
   issuesReported: { type: Number, default: 0 },
   totalVotesReceived: { type: Number, default: 0 },
   totalComments: { type: Number, default: 0 },
-  badge: { type: String, default: 'Beginner' }
+  badge: { type: String, default: 'Beginner' },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date
 }, { timestamps: true });
 
 userSchema.pre('save', async function() {

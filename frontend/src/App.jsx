@@ -12,17 +12,16 @@ import Analytics from './pages/Analytics';
 import UserDashboard from './pages/UserDashboard';
 import Leaderboard from './pages/Leaderboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import AnimatedBackground from './components/AnimatedBackground';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen text-slate-800 flex flex-col font-sans selection:bg-blue-200 relative overflow-x-hidden">
-        {/* GLOBAL PREMIUM BACKGROUND MESH */}
-        <div className="fixed inset-0 w-full h-full -z-10 bg-slate-50 pointer-events-none">
-          <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-200/40 blur-[100px] animate-pulse" style={{ animationDuration: '8s' }}></div>
-          <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-indigo-200/30 blur-[120px] animate-pulse" style={{ animationDuration: '12s' }}></div>
-          <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-sky-200/30 blur-[150px] animate-pulse" style={{ animationDuration: '10s' }}></div>
-        </div>
+        {/* INTERACTIVE PARTICLE CONSTELLATION MESH */}
+        <AnimatedBackground />
 
         <Navbar />
         <main className="flex-grow w-full z-10">
@@ -30,6 +29,8 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
             
             <Route path="/issues" element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path="/add-issue" element={<ProtectedRoute><AddIssue /></ProtectedRoute>} />
