@@ -22,7 +22,7 @@ const ResetPassword = () => {
     }
     setLoading(true);
     try {
-      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/users/resetpassword/${token}`, { password });
+      await axios.put(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/auth/resetpassword/${token}`, { password });
       setSuccess('Password completely reset successfully! Redirecting...');
       setTimeout(() => navigate('/login'), 2500);
     } catch (err) {

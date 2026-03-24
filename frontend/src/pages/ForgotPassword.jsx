@@ -16,7 +16,7 @@ const ForgotPassword = () => {
     setError('');
     setMessage('');
     try {
-      const response = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/users/forgotpassword', { email });
+      const response = await axios.post((import.meta.env.VITE_API_URL || 'http://localhost:5000') + '/api/auth/forgotpassword', { email });
       // We explicitly receive the demo URL from the backend
       setMessage(`Demo Link Generated: ${response.data.resetUrl}`);
     } catch (err) {
