@@ -61,8 +61,11 @@ const createReport = async (req, res) => {
       
       const isRelevant = validKeywords.some(kw => caption.includes(kw));
       
-      // If the image is a picture of a cute puppy or a selfie, blast it!
-      if (!isRelevant) {
+      const invalidKeywords = ['dog', 'cat', 'puppy', 'kitten', 'animal', 'pet', 'person', 'man', 'woman', 'child', 'selfie', 'face', 'boy', 'girl', 'people', 'baby', 'bird'];
+      const isInvalid = invalidKeywords.some(kw => caption.includes(kw));
+      
+      // If the image explicitly contains a pet/person, or lacks any hazard keywords, blast it!
+      if (isInvalid || !isRelevant) {
         return res.status(400).json({ 
           message: `AI Scanner Rejected: Image appears to be "${caption}". This is not recognized as valid community hazard evidence.` 
         });
