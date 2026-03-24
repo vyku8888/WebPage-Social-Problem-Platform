@@ -28,51 +28,37 @@ const createReport = async (req, res) => {
     return res.status(400).json({ message: 'Image is required for reporting' });
   }
 
-  // --- HUGGING FACE AI IMAGE VERIFICATION ---
+  // --- GEMINI AI IMAGE VERIFICATION ---
   try {
+    const { GoogleGenerativeAI } = require("@google/generative-ai");
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const aiModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    // Stream the uploaded Cloudinary image back to our backend memory securely
     const imgRes = await fetch(imageUrl);
     const imgBuffer = await imgRes.arrayBuffer();
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second max wait for demo speed constraints
 
-    const hfRes = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
-      headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}` },
-      method: "POST",
-      body: Buffer.from(imgBuffer),
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    const hfData = await hfRes.json();
-    
-    // Check if the AI returned a clear caption
-    if (Array.isArray(hfData) && hfData[0] && hfData[0].generated_text) {
-      const caption = hfData[0].generated_text.toLowerCase();
-      
-      // Master list of allowed social problem identifiers
-      const validKeywords = [
-        'garbage', 'trash', 'waste', 'dump', 'litter', 'plastic', 'bottle', 'bag',
-        'road', 'street', 'pothole', 'crack', 'asphalt', 'hole', 'damage', 'broken',
-        'water', 'pipe', 'leak', 'flood', 'drain', 'sewer', 'puddle', 
-        'pole', 'wire', 'cable', 'electricity', 'light', 'sign', 'fence', 'wall',
-        'dirt', 'mud', 'spill', 'debris', 'hazard', 'ruin', 'abandoned', 'mess', 'clutter', 'plant', 'tree', 'graffiti', 'paint', 'fire'
-      ];
-      
-      const isRelevant = validKeywords.some(kw => caption.includes(kw));
-      
-      const invalidKeywords = ['dog', 'cat', 'puppy', 'kitten', 'animal', 'pet', 'person', 'man', 'woman', 'child', 'selfie', 'face', 'boy', 'girl', 'people', 'baby', 'bird'];
-      const isInvalid = invalidKeywords.some(kw => caption.includes(kw));
-      
-      // If the image explicitly contains a pet/person, or lacks any hazard keywords, blast it!
-      if (isInvalid || !isRelevant) {
-        return res.status(400).json({ 
-          message: `AI Scanner Rejected: Image appears to be "${caption}". This is not recognized as valid community hazard evidence.` 
-        });
+    const imagePart = {
+      inlineData: {
+        data: Buffer.from(imgBuffer).toString("base64"),
+        mimeType: req.file.mimetype || "image/jpeg"
       }
+    };
+
+    const prompt = "You are an AI moderator for a citizen reporting app. Does this uploaded image show a real community hazard or infrastructure problem (e.g. garbage, pothole, leak, damage, street hazard, dirt)? Or is it irrelevant (e.g. dog, pet, person, selfie, meme, drawing)? If it is a real hazard, reply 'VALID'. If it is an animal, person, or irrelevant, reply 'INVALID'.";
+
+    // Pass the image directly into Google's supercomputer
+    const result = await aiModel.generateContent([prompt, imagePart]);
+    const aiResponse = result.response.text().trim().toUpperCase();
+
+    // If Gemini detects a dog/selfie/etc.
+    if (aiResponse.includes("INVALID")) {
+      return res.status(400).json({ 
+        message: `Gemini Advanced AI Rejected: This image does not appear to contain a valid community hazard (like infrastructure damage or litter). Please upload relevant photographic evidence.` 
+      });
     }
   } catch (error) {
-    console.error("AI Scanner Error or Timeout, allowing submission to proceed:", error.message);
+    console.error("Gemini AI API Error, allowing submission to proceed to prevent demo freeze:", error.message);
   }
   // ------------------------------------------
 
