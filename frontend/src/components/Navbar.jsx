@@ -34,32 +34,38 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-20">
           
           <Link to="/" className="flex items-center group">
-            <motion.img 
+            <motion.div 
               whileHover={{ scale: 1.05, rotate: -2 }}
               whileTap={{ scale: 0.95 }}
-              src="/sociofy-logo.jpg" 
-              alt="Sociofy" 
-              className="h-10 object-contain drop-shadow-sm" 
-            />
+              className="flex items-center gap-3"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-blue-500/30">
+                S
+              </div>
+              <span className="text-2xl font-black tracking-tighter bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent">
+                Sociofy
+              </span>
+            </motion.div>
           </Link>
           
           {/* CENTER NAVIGATION - LOGGED IN */}
           {user && (
-            <div className="hidden lg:flex items-center space-x-1 bg-slate-100/50 p-1.5 rounded-full border border-slate-200/50">
+            <div className="hidden lg:flex items-center space-x-1 bg-white/70 backdrop-blur-md p-1.5 rounded-full border border-slate-200/60 shadow-sm">
               {navLinks.map((link) => (
-                <Link 
-                  key={link.name}
-                  to={link.path} 
-                  className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
-                    location.pathname === link.path 
-                      ? 'bg-white shadow-sm text-blue-700' 
-                      : link.highlight
-                        ? 'text-indigo-600 hover:bg-white/50'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-white/50'
-                  }`}
-                >
-                  {link.name}
-                </Link>
+                <motion.div key={link.name} whileHover={{ scale: 1.05, y: -2 }} whileTap={{ scale: 0.95 }}>
+                  <Link 
+                    to={link.path} 
+                    className={`px-5 py-2 rounded-full text-sm font-bold transition-colors ${
+                      location.pathname === link.path 
+                        ? 'bg-blue-600 shadow-md shadow-blue-500/20 text-white' 
+                        : link.highlight
+                          ? 'text-indigo-600 hover:bg-indigo-50'
+                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
             </div>
           )}

@@ -60,26 +60,69 @@ const Landing = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative"
+            className="relative w-full h-[500px] lg:h-[600px] flex items-center justify-center mt-10 lg:mt-0"
           >
-            <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-indigo-50 rounded-[3rem] transform rotate-3 scale-105 -z-10"></div>
-            <img 
-              src="https://images.unsplash.com/photo-1517006877966-23577d853e5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-              alt="Community organizing" 
-              className="rounded-[3rem] shadow-2xl object-cover h-[600px] w-full"
-            />
-            {/* Floating Badge */}
+            {/* Abstract Background Element */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-100/60 to-indigo-50/60 rounded-[3rem] transform rotate-3 scale-105 -z-10 shadow-inner"></div>
+            
+            {/* Central Glass Card */}
             <motion.div 
-              animate={{ y: [0, -10, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="absolute top-10 -left-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl flex items-center gap-4"
+              animate={{ y: [0, -20, 0] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="absolute z-10 w-full max-w-md bg-white/70 backdrop-blur-2xl p-6 rounded-3xl shadow-[0_20px_40px_-20px_rgba(0,0,0,0.15)] border border-white"
             >
-              <div className="bg-green-100 p-3 rounded-full text-green-600">
-                <ShieldCheck className="w-6 h-6" />
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center shadow-inner">
+                  <ShieldCheck className="w-8 h-8 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-lg text-slate-800">AI Sensor Active</h3>
+                  <p className="text-sm text-slate-500 font-medium">Scanning incoming territory...</p>
+                </div>
+              </div>
+              
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="w-full h-16 rounded-2xl bg-white/90 p-3 flex items-center gap-4 shadow-sm border border-slate-100">
+                    <div className="w-10 h-10 rounded-xl bg-slate-100 animate-pulse"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="w-3/4 h-2.5 rounded-full bg-slate-200/80 animate-pulse" style={{ animationDelay: `${i * 150}ms`}}></div>
+                      <div className="w-1/2 h-2 rounded-full bg-slate-100 animate-pulse" style={{ animationDelay: `${i * 200}ms`}}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Floating Stat Card 1 */}
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0, y: [0, 15, 0] }}
+              transition={{ y: { repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }, opacity: { duration: 0.5, delay: 0.8 } }}
+              className="absolute -right-2 lg:-right-8 top-16 z-20 bg-white p-5 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-100"
+            >
+              <div className="bg-emerald-100 p-3.5 rounded-2xl text-emerald-600 shadow-inner">
+                <Users className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-sm text-slate-500 font-medium">AI Verified</p>
-                <p className="font-bold text-slate-900">100% Authentic</p>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Citizens</p>
+                <p className="font-black text-2xl text-slate-800">10,000+</p>
+              </div>
+            </motion.div>
+
+            {/* Floating Stat Card 2 */}
+            <motion.div 
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0, y: [0, -15, 0] }}
+              transition={{ y: { repeat: Infinity, duration: 7, ease: "easeInOut", delay: 0.5 }, opacity: { duration: 0.5, delay: 1.2 } }}
+              className="absolute -left-2 lg:-left-12 bottom-20 z-20 bg-white p-5 rounded-3xl shadow-xl flex items-center gap-4 border border-slate-100"
+            >
+              <div className="bg-indigo-100 p-3.5 rounded-2xl text-indigo-600 shadow-inner">
+                <BarChart3 className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Hazards Fixed</p>
+                <p className="font-black text-2xl text-slate-800">94% Rate</p>
               </div>
             </motion.div>
           </motion.div>
