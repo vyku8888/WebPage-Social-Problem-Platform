@@ -66,21 +66,20 @@ const forgotPassword = async (req, res) => {
       return res.status(404).json({ message: 'There is no user registered with that email address.' });
     }
 
-    // Generate highly secure cryptographic reset token
     const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    const resetPasswordExpire = Date.now() + 10 * 60 * 1000;
     
-    // Hash token and assign to user's resetPasswordToken memory block
-    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
-    
-    // Set token expiration strict boundary (10 minutes)
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
-    
-    await user.save();
+    // CRITICAL BYPASS: We strictly use updateOne to inject the token directly into Mongo Atlas.
+    // This absolutely guarantees we instantly bypass ALL buggy Mongoose pre-save middleware hooks!
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { resetPasswordToken, resetPasswordExpire } },
+      { runValidators: false }
+    );
 
-    // Create reset URL for the frontend router
     const resetUrl = `https://sociofy88.netlify.app/reset-password/${resetToken}`;
 
-    // DEMO BYPASS: Since SMTP mapping requires personal Gmail App Passwords, we expose it securely in the demo payload.
     res.status(200).json({ 
       success: true,
       message: 'Demo mode active: The password reset link has been successfully generated.',
@@ -88,8 +87,8 @@ const forgotPassword = async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Critical Server Error during password reset pipeline.' });
+    console.error('Password Reset Crash Details:', error);
+    res.status(500).json({ message: `System Fault: ${error.message} \n\nStack: ${error.stack}` });
   }
 };
 
@@ -98,7 +97,6 @@ const forgotPassword = async (req, res) => {
 // @access  Public
 const resetPassword = async (req, res) => {
   try {
-    // Reconstruct the cryptographic hash from the URL parameter token
     const resetPasswordToken = crypto.createHash('sha256').update(req.params.resetToken).digest('hex');
     
     const user = await User.findOne({
@@ -110,11 +108,11 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'The reset token is either mathematically invalid or has completely expired (10m limit).' });
     }
 
-    // Inject and save new password (Schema pre-save hook will automatically encrypt it again)
     user.password = req.body.password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     
+    // Since the password IS modified, the Mongoose pre-save hook will correctly trigger bcrypt.
     await user.save();
 
     res.status(200).json({ 
@@ -126,8 +124,8 @@ const resetPassword = async (req, res) => {
       token: generateToken(user._id)
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server Error during password restoration' });
+    console.error('Password Restore Crash Details:', error);
+    res.status(500).json({ message: `System Fault: ${error.message}` });
   }
 };
 
