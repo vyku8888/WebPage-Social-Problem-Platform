@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Landing from './pages/Landing';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -15,14 +16,15 @@ import ProtectedRoute from './components/ProtectedRoute';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 text-gray-800">
+      <div className="min-h-screen bg-slate-50 text-slate-800 flex flex-col font-sans selection:bg-blue-200">
         <Navbar />
-        <main className="container mx-auto px-4 py-8">
+        <main className="flex-grow w-full">
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             
-            <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/issues" element={<ProtectedRoute><Home /></ProtectedRoute>} />
             <Route path="/add-issue" element={<ProtectedRoute><AddIssue /></ProtectedRoute>} />
             <Route path="/report" element={<ProtectedRoute><ReportIssue /></ProtectedRoute>} />
             <Route path="/reports-list" element={<ProtectedRoute><ReportsList /></ProtectedRoute>} />
