@@ -58,7 +58,7 @@ const createReport = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error("Gemini AI API Error, allowing submission to proceed to prevent demo freeze:", error.message);
+    return res.status(500).json({ message: "Gemini AI CRITICAL ERROR: " + error.message + " (Please screenshot this and send it back to me!)" });
   }
   // ------------------------------------------
 
