@@ -28,6 +28,51 @@ const createReport = async (req, res) => {
     return res.status(400).json({ message: 'Image is required for reporting' });
   }
 
+  // --- HUGGING FACE AI IMAGE VERIFICATION ---
+  try {
+    const imgRes = await fetch(imageUrl);
+    const imgBuffer = await imgRes.arrayBuffer();
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 second max wait for demo speed constraints
+
+    const hfRes = await fetch("https://api-inference.huggingface.co/models/Salesforce/blip-image-captioning-large", {
+      headers: { Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}` },
+      method: "POST",
+      body: Buffer.from(imgBuffer),
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    const hfData = await hfRes.json();
+    
+    // Check if the AI returned a clear caption
+    if (Array.isArray(hfData) && hfData[0] && hfData[0].generated_text) {
+      const caption = hfData[0].generated_text.toLowerCase();
+      
+      // Master list of allowed social problem identifiers
+      const validKeywords = [
+        'garbage', 'trash', 'waste', 'dump', 'litter', 'plastic', 'bottle', 'bag',
+        'road', 'street', 'pothole', 'crack', 'asphalt', 'hole', 'damage', 'broken',
+        'water', 'pipe', 'leak', 'flood', 'drain', 'sewer', 'puddle', 
+        'pole', 'wire', 'cable', 'electricity', 'light', 'sign', 'fence', 'wall',
+        'dirt', 'mud', 'spill', 'debris', 'hazard', 'ruin', 'abandoned', 'mess', 'clutter', 'plant', 'tree', 'graffiti', 'paint', 'fire'
+      ];
+      
+      const isRelevant = validKeywords.some(kw => caption.includes(kw));
+      
+      // If the image is a picture of a cute puppy or a selfie, blast it!
+      if (!isRelevant) {
+        return res.status(400).json({ 
+          message: `AI Scanner Rejected: Image appears to be "${caption}". This is not recognized as valid community hazard evidence.` 
+        });
+      }
+    }
+  } catch (error) {
+    console.error("AI Scanner Error or Timeout, allowing submission to proceed:", error.message);
+  }
+  // ------------------------------------------
+
   try {
     const report = new Report({
       title,
